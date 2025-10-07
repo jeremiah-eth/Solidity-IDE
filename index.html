@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Solidity IDE - Compile & Deploy Smart Contracts</title>
+    <meta name="description" content="Professional Solidity IDE for smart contract development. Compile, deploy, and interact with Ethereum smart contracts. Features Monaco editor, gas estimation, contract verification, and multi-chain support." />
+    <meta name="keywords" content="solidity, smart contracts, ethereum, blockchain, IDE, compile, deploy, web3, development" />
+    <meta name="author" content="Solidity IDE" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Solidity IDE - Compile & Deploy Smart Contracts" />
+    <meta property="og:description" content="Professional Solidity IDE for smart contract development with Monaco editor, gas estimation, and multi-chain support." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://solidity-ide.com" />
+    <meta property="og:image" content="/og-image.png" />
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Solidity IDE - Compile & Deploy Smart Contracts" />
+    <meta name="twitter:description" content="Professional Solidity IDE for smart contract development with Monaco editor, gas estimation, and multi-chain support." />
+    <meta name="twitter:image" content="/twitter-image.png" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://api.etherscan.io" />
+    <link rel="preconnect" href="https://api.basescan.org" />
+    <link rel="preconnect" href="https://api.celoscan.io" />
+    <link rel="preconnect" href="https://gateway.pinata.cloud" />
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#0f172a" />
+    <meta name="msapplication-TileColor" content="#0f172a" />
+    
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    
+    <!-- Performance Hints -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+  </head>
+  <body class="bg-gray-900 text-white">
+    <!-- Root element for React -->
+    <div id="root"></div>
+    
+    <!-- Loading fallback -->
+    <div id="loading-fallback" style="display: none;">
+      <div class="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+        <div class="text-center">
+          <div class="spinner mx-auto mb-4"></div>
+          <p class="text-gray-300">Loading Solidity IDE...</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- No JavaScript fallback -->
+    <noscript>
+      <div class="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+        <div class="text-center p-8 max-w-md">
+          <h1 class="text-2xl font-bold text-red-400 mb-4">
+            JavaScript Required
+          </h1>
+          <p class="text-gray-300 mb-6">
+            The Solidity IDE requires JavaScript to function properly. Please enable JavaScript in your browser settings and refresh the page.
+          </p>
+          <div class="space-y-2 text-sm text-gray-400">
+            <p><strong>Chrome/Edge:</strong> Settings → Privacy and Security → Site Settings → JavaScript</p>
+            <p><strong>Firefox:</strong> about:config → javascript.enabled</p>
+            <p><strong>Safari:</strong> Preferences → Security → Enable JavaScript</p>
+          </div>
+        </div>
+      </div>
+    </noscript>
+    
+    <!-- Polyfills for Node.js compatibility -->
+    <script>
+      // Define global for Node.js packages
+      if (typeof global === 'undefined') {
+        window.global = window;
+      }
+      
+      // Define Buffer if not available
+      if (typeof Buffer === 'undefined') {
+        window.Buffer = window.Buffer || {};
+      }
+      
+      // Define process if not available - MUST be done before any other scripts
+      if (typeof process === 'undefined') {
+        window.process = {
+          env: {},
+          argv: [],
+          cwd: () => '/',
+          nextTick: (fn) => setTimeout(fn, 0),
+          on: (event, listener) => {
+            console.log(`process.on(${event}) called - polyfilled`);
+            return window.process;
+          },
+          off: (event, listener) => {
+            console.log(`process.off(${event}) called - polyfilled`);
+            return window.process;
+          },
+          emit: (event, ...args) => {
+            console.log(`process.emit(${event}) called - polyfilled`);
+            return false;
+          },
+          addListener: (event, listener) => {
+            console.log(`process.addListener(${event}) called - polyfilled`);
+            return window.process;
+          },
+          removeListener: (event, listener) => {
+            console.log(`process.removeListener(${event}) called - polyfilled`);
+            return window.process;
+          },
+          once: (event, listener) => {
+            console.log(`process.once(${event}) called - polyfilled`);
+            return window.process;
+          },
+          listeners: (event) => {
+            console.log(`process.listeners(${event}) called - polyfilled`);
+            return [];
+          },
+          removeAllListeners: (event) => {
+            console.log(`process.removeAllListeners(${event || 'all'}) called - polyfilled`);
+            return window.process;
+          },
+          setMaxListeners: (n) => {
+            console.log(`process.setMaxListeners(${n}) called - polyfilled`);
+            return window.process;
+          },
+          getMaxListeners: () => {
+            console.log(`process.getMaxListeners() called - polyfilled`);
+            return 10;
+          },
+          listenerCount: (event) => {
+            console.log(`process.listenerCount(${event}) called - polyfilled`);
+            return 0;
+          },
+          prependListener: (event, listener) => {
+            console.log(`process.prependListener(${event}) called - polyfilled`);
+            return window.process;
+          },
+          prependOnceListener: (event, listener) => {
+            console.log(`process.prependOnceListener(${event}) called - polyfilled`);
+            return window.process;
+          },
+          eventNames: () => {
+            console.log(`process.eventNames() called - polyfilled`);
+            return [];
+          }
+        };
+      }
+      
+      // Also define process on globalThis
+      if (typeof globalThis.process === 'undefined') {
+        globalThis.process = window.process;
+      }
+      
+      // Define Node.js built-ins
+      if (typeof globalThis.Buffer === 'undefined') {
+        globalThis.Buffer = globalThis.Buffer || {};
+      }
+      
+      // Define __dirname and __filename for solc compatibility
+      if (typeof __dirname === 'undefined') {
+        window.__dirname = '/';
+      }
+      if (typeof __filename === 'undefined') {
+        window.__filename = '/solc.js';
+      }
+    </script>
+    
+    <!-- Load the main application -->
+    <script type="module" src="/src/index.tsx"></script>
+    
+  </body>
+</html>
