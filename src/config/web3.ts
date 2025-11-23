@@ -1,5 +1,6 @@
 import { createAppKit } from '@reown/appkit/react'
 import { EthersAdapter } from '@reown/appkit-adapter-ethers'
+import type { AppKitNetwork } from '@reown/appkit/networks'
 import {
   mainnet,
   sepolia,
@@ -20,7 +21,7 @@ export const networks = [
   baseSepolia,
   celo,
   celoAlfajores
-]
+] as [AppKitNetwork, ...AppKitNetwork[]]
 
 // 3. Create a metadata object - optional
 const metadata = {
