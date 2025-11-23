@@ -1,5 +1,6 @@
 import { useAppKit, useAppKitAccount, useAppKitProvider, useAppKitNetwork } from '@reown/appkit/react';
-import { BrowserProvider, Eip1193Provider, Signer } from 'ethers';
+import { BrowserProvider } from 'ethers';
+import type { Eip1193Provider, Signer } from 'ethers';
 import { useState, useEffect, useMemo } from 'react';
 
 export function useAppKitWallet() {
