@@ -41,9 +41,9 @@ export function Header({
     id: network.id,
     name: network.name,
     chainId: network.chainId,
-    isTestnet: network.name.toLowerCase().includes('testnet') || 
-               network.name.toLowerCase().includes('sepolia') || 
-               network.name.toLowerCase().includes('alfajores')
+    isTestnet: network.name.toLowerCase().includes('testnet') ||
+      network.name.toLowerCase().includes('sepolia') ||
+      network.name.toLowerCase().includes('alfajores')
   }));
 
   // Get current network
@@ -84,8 +84,8 @@ export function Header({
 
   // Get network badge color
   const getNetworkBadgeColor = (isTestnet: boolean) => {
-    return isTestnet 
-      ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' 
+    return isTestnet
+      ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
       : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
   };
 
@@ -98,7 +98,7 @@ export function Header({
             <Code2 className="h-8 w-8 text-blue-500" />
             <h1 className="text-xl font-bold text-white">Solidity IDE</h1>
           </div>
-          
+
           {/* Test Compiler Button */}
           <button
             onClick={handleTestCompiler}
@@ -139,9 +139,8 @@ export function Header({
                         onNetworkChange(network.chainId);
                         setIsNetworkDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-4 py-3 hover:bg-gray-700 transition-colors ${
-                        network.chainId === selectedChainId ? 'bg-gray-700' : ''
-                      }`}
+                      className={`w-full text-left px-4 py-3 hover:bg-gray-700 transition-colors ${network.chainId === selectedChainId ? 'bg-gray-700' : ''
+                        }`}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
@@ -210,8 +209,8 @@ export function Header({
                         }}
                         className="w-full text-left px-4 py-3 hover:bg-gray-700 transition-colors flex items-center space-x-2"
                       >
-                        <LogOut className="h-4 w-4 text-gray-400" />
-                        <span className="text-white text-sm">Disconnect</span>
+                        <Wallet className="h-4 w-4 text-gray-400" />
+                        <span className="text-white text-sm">Manage Wallet</span>
                       </button>
                     </div>
                   </div>
@@ -224,7 +223,7 @@ export function Header({
                 className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
               >
                 <Wallet className="h-4 w-4" />
-                <span className="text-sm font-medium">Connect Wallet</span>
+                <span className="text-sm font-medium">Connect</span>
               </button>
             )}
           </div>
