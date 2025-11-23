@@ -19,6 +19,21 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        worker: path.resolve(__dirname, 'src/solc-worker.js'),
+      },
+      output: {
+        entryFileNames: (chunkInfo) => {
+          // Place worker at root of dist
+          if (chunkInfo.name === 'worker') {
+            return 'solc-worker.js';
+          }
+          return 'assets/[name]-[hash].js';
+        },
+      },
+    },
   },
   optimizeDeps: {
     exclude: ['solc'], // Exclude solc since we're using CDN
