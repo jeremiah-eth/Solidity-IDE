@@ -1,16 +1,16 @@
 import { createAppKit } from '@reown/appkit/react'
 import { EthersAdapter } from '@reown/appkit-adapter-ethers'
-import { 
-  mainnet, 
-  sepolia, 
-  base, 
-  baseSepolia, 
-  celo, 
-  celoAlfajores 
+import {
+  mainnet,
+  sepolia,
+  base,
+  baseSepolia,
+  celo,
+  celoAlfajores
 } from '@reown/appkit/networks'
 
 // 1. Get projectId
-const projectId = 'YOUR_PROJECT_ID' // TODO: Replace with actual project ID
+const projectId = import.meta.env.VITE_PROJECT_ID || 'YOUR_PROJECT_ID'
 
 // 2. Set existing networks
 export const networks = [
