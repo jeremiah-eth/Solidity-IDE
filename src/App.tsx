@@ -17,6 +17,7 @@ import { verifyContract, checkVerificationStatus } from './utils/contractVerific
 import { uploadMetadata, createContractMetadata } from './utils/ipfs-mock';
 import { HelpCircle, X, CheckCircle, AlertCircle } from 'lucide-react';
 import type { ContractFile, DeployedContract, Network, CompiledContract } from './types';
+import './config/web3'; // Initialize AppKit
 
 // Toast interface
 interface Toast {
@@ -138,7 +139,7 @@ export function App() {
 
   // Update file content
   const updateFileContent = useCallback((content: string) => {
-    setFiles(prev => prev.map(file => 
+    setFiles(prev => prev.map(file =>
       file.name === currentFile ? { ...file, content } : file
     ));
   }, [currentFile]);
@@ -166,7 +167,7 @@ export function App() {
 
   // Rename file
   const renameFile = useCallback((oldName: string, newName: string) => {
-    setFiles(prev => prev.map(file => 
+    setFiles(prev => prev.map(file =>
       file.name === oldName ? { ...file, name: newName } : file
     ));
     if (currentFile === oldName) {
@@ -200,7 +201,7 @@ export function App() {
       const sourceCode = getCurrentFileContent();
       const contractName = currentFile.replace('.sol', '');
       const result = await compileContract(sourceCode, contractName);
-      
+
       setCompilationStatus('success');
       setCompilationTime(Date.now() - startTime);
       showToast('success', 'Contract compiled successfully!');
@@ -215,7 +216,7 @@ export function App() {
   const handleDeploy = useCallback(async (contract: any, constructorArgs: any[], signer: any) => {
     try {
       const result = await deployContract(contract.bytecode, contract.abi, constructorArgs, signer);
-      
+
       // Get current network
       const network = getAllNetworks().find(n => n.chainId === selectedChainId);
       if (!network) throw new Error('Network not found');
@@ -232,7 +233,7 @@ export function App() {
 
       saveDeployedContract(deployedContract);
       showToast('success', `Contract deployed at ${result.contractAddress}`);
-      
+
       return result;
     } catch (error) {
       showToast('error', `Deployment failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -309,7 +310,7 @@ export function App() {
     const id = Math.random().toString(36).substr(2, 9);
     const toast: Toast = { id, type, message, duration };
     setToasts(prev => [...prev, toast]);
-    
+
     setTimeout(() => {
       setToasts(prev => prev.filter(t => t.id !== id));
     }, duration);
@@ -342,26 +343,24 @@ export function App() {
             <div className="flex border-b border-gray-700">
               <button
                 onClick={() => setActiveView('editor')}
-                className={`flex-1 py-3 px-4 text-sm font-medium ${
-                  activeView === 'editor'
+                className={`flex-1 py-3 px-4 text-sm font-medium ${activeView === 'editor'
                     ? 'text-blue-400 border-b-2 border-blue-400 bg-gray-800'
                     : 'text-gray-400 hover:text-white'
-                }`}
+                  }`}
               >
                 Editor
               </button>
               <button
                 onClick={() => setActiveView('deployed')}
-                className={`flex-1 py-3 px-4 text-sm font-medium ${
-                  activeView === 'deployed'
+                className={`flex-1 py-3 px-4 text-sm font-medium ${activeView === 'deployed'
                     ? 'text-blue-400 border-b-2 border-blue-400 bg-gray-800'
                     : 'text-gray-400 hover:text-white'
-                }`}
+                  }`}
               >
                 Contracts
               </button>
             </div>
-            
+
             {activeView === 'editor' && (
               <div className="flex-1 flex flex-col">
                 <div className="flex-1">
@@ -384,7 +383,7 @@ export function App() {
                 </div>
               </div>
             )}
-            
+
             {activeView === 'deployed' && (
               <div className="flex-1 p-4">
                 <DeployedContracts
@@ -470,11 +469,10 @@ export function App() {
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`flex items-center space-x-2 p-3 rounded-lg shadow-lg max-w-sm ${
-              toast.type === 'success' ? 'bg-green-600' :
-              toast.type === 'error' ? 'bg-red-600' :
-              'bg-blue-600'
-            }`}
+            className={`flex items-center space-x-2 p-3 rounded-lg shadow-lg max-w-sm ${toast.type === 'success' ? 'bg-green-600' :
+                toast.type === 'error' ? 'bg-red-600' :
+                  'bg-blue-600'
+              }`}
           >
             {toast.type === 'success' && <CheckCircle className="h-5 w-5" />}
             {toast.type === 'error' && <AlertCircle className="h-5 w-5" />}
