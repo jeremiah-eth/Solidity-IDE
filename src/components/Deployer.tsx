@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Rocket, 
-  ExternalLink, 
-  Copy, 
-  Upload, 
-  CheckCircle, 
+import {
+  Rocket,
+  ExternalLink,
+  Copy,
+  Upload,
+  CheckCircle,
   Loader2,
   Network as NetworkIcon,
   Settings,
@@ -14,6 +14,7 @@ import {
   Shield
 } from 'lucide-react';
 import type { Network, CompiledContract, DeployedContract } from '../types';
+import type { DeploymentResult, GasEstimation } from '../utils/contractDeployment';
 
 // Deployer props interface
 interface DeployerProps {
@@ -24,23 +25,7 @@ interface DeployerProps {
   onDeploy: (contract: CompiledContract, constructorArgs: any[], signer: any) => Promise<DeploymentResult>;
   onVerify: (address: string, sourceCode: string, contractName: string, chainId: number) => Promise<void>;
   onUploadMetadata: (contract: DeployedContract, chainId: number) => Promise<void>;
-  onEstimateZap?: (contract: CompiledContract, constructorArgs: any[], signer: any) => Promise<ZapEstimation>;
-}
-
-// Deployment result interface
-interface DeploymentResult {
-  contractAddress: string;
-  transactionHash: string;
-  gasUsed: string;
-  blockNumber: number;
-  deployedContract: DeployedContract;
-}
-
-// Zap estimation interface
-interface ZapEstimation {
-  gasLimit: bigint;
-  gasPrice: bigint;
-  estimatedCost: string;
+  onEstimateZap?: (contract: CompiledContract, constructorArgs: any[], signer: any) => Promise<GasEstimation>;
 }
 
 // Constructor argument interface
@@ -63,7 +48,7 @@ export function Deployer({
   onEstimateZap
 }: DeployerProps) {
   const [constructorArgs, setConstructorArgs] = useState<ConstructorArg[]>([]);
-  const [gasEstimation, setZapEstimation] = useState<ZapEstimation | null>(null);
+  const [gasEstimation, setZapEstimation] = useState<GasEstimation | null>(null);
   const [isEstimating, setIsEstimating] = useState(false);
   const [isDeploying, setIsDeploying] = useState(false);
   const [deploymentResult, setDeploymentResult] = useState<DeploymentResult | null>(null);
@@ -90,7 +75,7 @@ export function Deployer({
 
   // Handle constructor argument change
   const handleArgChange = (index: number, value: string) => {
-    setConstructorArgs(prev => prev.map((arg, i) => 
+    setConstructorArgs(prev => prev.map((arg, i) =>
       i === index ? { ...arg, value } : arg
     ));
   };
@@ -208,7 +193,7 @@ export function Deployer({
   };
 
   // Check if deployment is possible
-  const canDeploy = compiledContract && signer && constructorArgs.every(arg => 
+  const canDeploy = compiledContract && signer && constructorArgs.every(arg =>
     !arg.required || arg.value.trim() !== ''
   );
 
@@ -349,7 +334,7 @@ export function Deployer({
             <CheckCircle className="h-4 w-4" />
             <span className="text-sm font-medium">Deployment Successful</span>
           </div>
-          
+
           <div className="bg-gray-700 rounded-lg p-4 space-y-3">
             {/* Transaction Hash */}
             <div className="flex items-center justify-between">
@@ -419,7 +404,7 @@ export function Deployer({
       {deploymentResult && (
         <div className="space-y-3">
           <h3 className="text-white font-medium">Post-Deployment Actions</h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {/* Verify Contract */}
             <button
@@ -474,7 +459,7 @@ export function ZapEstimation({
   onEstimate,
   isEstimating
 }: {
-  gasEstimation: ZapEstimation | null;
+  gasEstimation: GasEstimation | null;
   network: Network | null;
   onEstimate: () => void;
   isEstimating: boolean;
@@ -544,7 +529,7 @@ export function DeploymentResult({
         <CheckCircle className="h-4 w-4" />
         <span className="text-sm font-medium">Deployment Successful</span>
       </div>
-      
+
       <div className="space-y-3">
         {/* Transaction Hash */}
         <div className="flex items-center justify-between">

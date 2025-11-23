@@ -18,18 +18,16 @@ import { HelpCircle, X, CheckCircle, AlertCircle } from 'lucide-react';
 import type { ContractFile, DeployedContract, Network, CompiledContract } from './types';
 
 export default function App() {
+  // Hooks must be called at the top level, not inside try-catch
+  const wallet = useWallet();
+  const contract = useContract();
+
   console.log('App component is rendering with hooks');
-  
+
   try {
-    // Test the hooks one by one
-    console.log('Testing useWallet hook...');
-    const wallet = useWallet();
     console.log('useWallet result:', wallet);
-    
-    console.log('Testing useContract hook...');
-    const contract = useContract();
     console.log('useContract result:', contract);
-    
+
     return (
       <div className="min-h-screen bg-gray-900 text-white p-8">
         <h1 className="text-2xl font-bold">Solidity IDE - Debug Mode</h1>
