@@ -64,6 +64,15 @@
           "value": "application/javascript; charset=utf-8"
         }
       ]
+    },
+    {
+      "source": "/(.*\\.css)$",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/css; charset=utf-8"
+        }
+      ]
     }
   ],
   "env": {

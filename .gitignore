@@ -177,3 +177,4 @@ deployments/
 artifacts/
 cache/
 typechain-types/
+.jest/

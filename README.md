@@ -28,6 +28,11 @@ A professional, web-based Solidity IDE for smart contract development with Monac
 - **Error Handling**: Comprehensive error boundaries and user feedback
 - **IPFS Integration**: Upload contract metadata to decentralized storage
 
+### UI & UX
+- **Dark Mode**: Built-in dark mode support with system preference detection
+- **Glassmorphism**: Modern, premium UI design with glass-like components
+- **Responsive Layout**: Optimized for all screen sizes
+
 ## 🛠️ Technology Stack
 
 - **Frontend**: React 19.2.0, TypeScript 5.9.3
