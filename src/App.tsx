@@ -21,6 +21,8 @@ import { FaucetModal } from './components/FaucetModal';
 import { useFaucet } from './hooks/useFaucet';
 import { EventConsole } from './components/EventConsole';
 import { useContractEvents } from './hooks/useContractEvents';
+import { ContractVisualizer } from './components/ContractVisualizer';
+import { generateDependencyGraph } from './utils/contractGraphGenerator';
 import './config/web3'; // Initialize AppKit
 
 // Toast interface
@@ -84,6 +86,8 @@ export function App() {
     selectedContract?.address || null,
     selectedContract?.abi || null
   );
+  const [showGraph, setShowGraph] = useState(false);
+  const [mermaidCode, setMermaidCode] = useState<string>('');
 
   // Load deployed contracts from localStorage on mount
   useEffect(() => {
@@ -216,6 +220,14 @@ export function App() {
       setCompilationStatus('success');
       setCompilationTime(Date.now() - startTime);
       showToast('success', 'Contract compiled successfully!');
+
+      // Generate contract graph
+      try {
+        const graph = generateDependencyGraph(sourceCode);
+        setMermaidCode(graph);
+      } catch (error) {
+        console.error('Failed to generate contract graph:', error);
+      }
     } catch (error) {
       setCompilationStatus('failed');
       setCompilationTime(Date.now() - startTime);
@@ -435,15 +447,41 @@ export function App() {
               />
             </div>
 
-            {/* Right Panel - Compiler Output + Deployer */}
+            {/* Right Panel - Compiler Output + Graph + Deployer */}
             <div className="w-1/5 flex flex-col">
-              <div className="flex-1 border-b border-gray-700">
-                <CompilerOutput
-                  compilationResult={convertToCompilationResult(compiledContracts.get(currentFile.replace('.sol', '')) || null)}
-                  errors={compilationErrors.map(e => e.message)}
-                  warnings={[]}
-                  compilationTime={compilationTime}
-                />
+              {/* Tab Switcher */}
+              <div className="flex border-b border-gray-700 bg-gray-800/50">
+                <button
+                  onClick={() => setShowGraph(false)}
+                  className={`flex-1 py-2 px-3 text-xs font-medium transition-colors ${!showGraph
+                      ? 'text-blue-400 border-b-2 border-blue-400 bg-gray-800'
+                      : 'text-gray-400 hover:text-white'
+                    }`}
+                >
+                  Output
+                </button>
+                <button
+                  onClick={() => setShowGraph(true)}
+                  className={`flex-1 py-2 px-3 text-xs font-medium transition-colors ${showGraph
+                      ? 'text-blue-400 border-b-2 border-blue-400 bg-gray-800'
+                      : 'text-gray-400 hover:text-white'
+                    }`}
+                >
+                  Graph
+                </button>
+              </div>
+
+              <div className="flex-1 border-b border-gray-700 overflow-hidden">
+                {!showGraph ? (
+                  <CompilerOutput
+                    compilationResult={convertToCompilationResult(compiledContracts.get(currentFile.replace('.sol', '')) || null)}
+                    errors={compilationErrors.map(e => e.message)}
+                    warnings={[]}
+                    compilationTime={compilationTime}
+                  />
+                ) : (
+                  <ContractVisualizer mermaidCode={mermaidCode} />
+                )}
               </div>
               <div className="flex-1">
                 <Deployer
