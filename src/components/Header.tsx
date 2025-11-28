@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Wallet, ChevronDown, Network as NetworkIcon, Copy, LogOut, Code2, TestTube } from 'lucide-react';
+import { Wallet, ChevronDown, Network as NetworkIcon, Copy, LogOut, Code2, TestTube, Droplets } from 'lucide-react';
 import { getAllNetworks } from '../utils/networks';
 import { testCompilation } from '../utils/testCompiler';
 import type { Network } from '../types';
 import { GlassCard } from './GlassCard';
 import { DarkModeToggle } from './DarkModeToggle';
-
+import { LocalNodeStatus } from './LocalNodeStatus';
 // Header props interface
 interface HeaderProps {
   selectedChainId: number;
@@ -16,6 +16,7 @@ interface HeaderProps {
   };
   onConnect: () => void;
   onDisconnect: () => void;
+  onOpenFaucet?: () => void;
 }
 
 // Network option interface
@@ -32,6 +33,7 @@ export function Header({
   wallet,
   onConnect,
   onDisconnect,
+  onOpenFaucet,
 }: HeaderProps) {
   const [isNetworkDropdownOpen, setIsNetworkDropdownOpen] = useState(false);
   const [isWalletDropdownOpen, setIsWalletDropdownOpen] = useState(false);
@@ -104,9 +106,22 @@ export function Header({
             <TestTube className="h-4 w-4" />
             <span className="text-sm font-medium">Test Compiler</span>
           </button>
+          {/* Faucet Button */}
+          {(currentNetwork?.isTestnet || currentNetwork?.id === 'hardhat' || currentNetwork?.id === 'localhost') && (
+            <button
+              onClick={onOpenFaucet}
+              className="flex items-center space-x-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition-colors"
+              title="Get Testnet Funds"
+            >
+              <Droplets className="h-4 w-4" />
+              <span className="text-sm font-medium">Get Funds</span>
+            </button>
+          )}
         </div>
+
         {/* Network Selector and Wallet */}
         <div className="flex items-center space-x-4">
+          <LocalNodeStatus />
           {/* Network Selector */}
           <div className="relative">
             <button
@@ -211,7 +226,6 @@ export function Header({
           </div>
           <DarkModeToggle />
         </div>
-      </div>
     </GlassCard>
   );
 }
