@@ -17,6 +17,10 @@ import { verifyContract, checkVerificationStatus } from './utils/contractVerific
 import { uploadMetadata, createContractMetadata } from './utils/ipfs-mock';
 import { HelpCircle, X, CheckCircle, AlertCircle } from 'lucide-react';
 import type { ContractFile, DeployedContract, Network, CompiledContract } from './types';
+import { FaucetModal } from './components/FaucetModal';
+import { useFaucet } from './hooks/useFaucet';
+import { EventConsole } from './components/EventConsole';
+import { useContractEvents } from './hooks/useContractEvents';
 import './config/web3'; // Initialize AppKit
 
 // Toast interface
@@ -73,6 +77,13 @@ export function App() {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isFaucetModalOpen, setIsFaucetModalOpen] = useState(false);
+  const { requestFunds } = useFaucet();
+  const { events, clearEvents, isPaused, togglePause } = useContractEvents(
+    signer?.provider || null,
+    selectedContract?.address || null,
+    selectedContract?.abi || null
+  );
 
   // Load deployed contracts from localStorage on mount
   useEffect(() => {
@@ -333,6 +344,7 @@ export function App() {
         wallet={{ address, isConnected }}
         onConnect={connectWallet}
         onDisconnect={disconnectWallet}
+        onOpenFaucet={() => setIsFaucetModalOpen(true)}
       />
 
       {/* Main Content */}
@@ -344,8 +356,8 @@ export function App() {
               <button
                 onClick={() => setActiveView('editor')}
                 className={`flex-1 py-3 px-4 text-sm font-medium ${activeView === 'editor'
-                    ? 'text-blue-400 border-b-2 border-blue-400 bg-gray-800'
-                    : 'text-gray-400 hover:text-white'
+                  ? 'text-blue-400 border-b-2 border-blue-400 bg-gray-800'
+                  : 'text-gray-400 hover:text-white'
                   }`}
               >
                 Editor
@@ -353,8 +365,8 @@ export function App() {
               <button
                 onClick={() => setActiveView('deployed')}
                 className={`flex-1 py-3 px-4 text-sm font-medium ${activeView === 'deployed'
-                    ? 'text-blue-400 border-b-2 border-blue-400 bg-gray-800'
-                    : 'text-gray-400 hover:text-white'
+                  ? 'text-blue-400 border-b-2 border-blue-400 bg-gray-800'
+                  : 'text-gray-400 hover:text-white'
                   }`}
               >
                 Contracts
@@ -449,16 +461,25 @@ export function App() {
         )}
       </div>
 
-      {/* Bottom Panel - Contract Interaction (Desktop only) */}
-      {!isMobile && selectedContract && (
-        <div className="fixed bottom-0 left-0 right-0 h-1/3 border-t border-gray-700 bg-gray-800">
-          <div className="h-full overflow-auto">
-            <ContractInteraction
-              deployedContracts={getDeployedContracts()}
-              selectedContract={selectedContract}
-              chainId={selectedChainId}
-              signer={signer}
-              onSelectContract={handleSelectContract}
+      {!isMobile && (
+        <div className="fixed bottom-0 left-0 right-0 h-1/3 border-t border-gray-700 bg-gray-800 flex">
+          {selectedContract && (
+            <div className="w-1/2 border-r border-gray-700 h-full overflow-auto">
+              <ContractInteraction
+                deployedContracts={getDeployedContracts()}
+                selectedContract={selectedContract}
+                chainId={selectedChainId}
+                signer={signer}
+                onSelectContract={handleSelectContract}
+              />
+            </div>
+          )}
+          <div className={`${selectedContract ? 'w-1/2' : 'w-full'} h-full`}>
+            <EventConsole
+              events={events}
+              onClear={clearEvents}
+              isPaused={isPaused}
+              onTogglePause={togglePause}
             />
           </div>
         </div>
@@ -470,8 +491,8 @@ export function App() {
           <div
             key={toast.id}
             className={`flex items-center space-x-2 p-3 rounded-lg shadow-lg max-w-sm ${toast.type === 'success' ? 'bg-green-600' :
-                toast.type === 'error' ? 'bg-red-600' :
-                  'bg-blue-600'
+              toast.type === 'error' ? 'bg-red-600' :
+                'bg-blue-600'
               }`}
           >
             {toast.type === 'success' && <CheckCircle className="h-5 w-5" />}
@@ -531,6 +552,14 @@ export function App() {
       >
         <HelpCircle className="h-5 w-5" />
       </button>
+
+      {/* Faucet Modal */}
+      <FaucetModal
+        isOpen={isFaucetModalOpen}
+        onClose={() => setIsFaucetModalOpen(false)}
+        address={address}
+        network={currentNetwork || null}
+      />
     </div>
   );
 }
