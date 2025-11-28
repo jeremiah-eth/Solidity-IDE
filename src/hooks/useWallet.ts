@@ -58,6 +58,9 @@ export function useWallet(): UseWalletReturn {
       await appKitSwitchNetwork(newChainId);
     } catch (err) {
       console.error('Failed to switch network:', err);
+      if (newChainId === 31337 || newChainId === 1337) {
+        throw new Error('Failed to connect to Localhost. Is Hardhat/Anvil running on port 8545?');
+      }
       throw err;
     }
   };
