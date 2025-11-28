@@ -4,6 +4,8 @@ import type { Network } from '../types';
 const QUICKNODE_URL = import.meta.env.VITE_QUICKNODE_URL || '';
 const ETHERSCAN_API_KEY = import.meta.env.VITE_ETHERSCAN_API_KEY || '';
 
+import { LOCAL_NODE_URL } from './localNode';
+
 // Network configurations
 export const networks: Record<string, Network> = {
   // Hardhat Local Network
@@ -11,7 +13,22 @@ export const networks: Record<string, Network> = {
     id: 'hardhat',
     name: 'Hardhat Local',
     chainId: 31337,
-    rpcUrl: 'http://127.0.0.1:8545',
+    rpcUrl: LOCAL_NODE_URL,
+    blockExplorer: '',
+    blockExplorerApi: '',
+    nativeCurrency: {
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18
+    }
+  },
+
+  // Generic Localhost
+  localhost: {
+    id: 'localhost',
+    name: 'Localhost',
+    chainId: 1337,
+    rpcUrl: LOCAL_NODE_URL,
     blockExplorer: '',
     blockExplorerApi: '',
     nativeCurrency: {
