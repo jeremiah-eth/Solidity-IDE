@@ -266,7 +266,7 @@ export async function generateDocumentation(code: string): Promise<string> {
     if (functions.length > 0) {
         doc += '## Functions\n\n';
         functions.forEach(func => {
-            const funcName = func.match(/function\s+(\w+)/)?.[1];
+            const funcName = func.match(/function\s+(\w+)/)?.[1] ?? 'unknown';
             doc += `### ${funcName}\n`;
             doc += `\`\`\`solidity\n${func}\n\`\`\`\n\n`;
         });

@@ -25,6 +25,8 @@ import { ContractVisualizer } from './components/ContractVisualizer';
 import { generateDependencyGraph } from './utils/contractGraphGenerator';
 import { GasOptimizerPanel } from './components/GasOptimizerPanel';
 import { analyzeGasUsage, type GasAnalysis } from './utils/gasProfiler';
+import { SecurityAuditPanel } from './components/SecurityAuditPanel';
+import { auditContract, type AuditReport } from './utils/securityAuditor';
 import './config/web3'; // Initialize AppKit
 
 // Toast interface
@@ -90,8 +92,9 @@ export function App() {
   );
   const [showGraph, setShowGraph] = useState(false);
   const [mermaidCode, setMermaidCode] = useState<string>('');
-  const [rightPanelTab, setRightPanelTab] = useState<'output' | 'graph' | 'gas'>('output');
+  const [rightPanelTab, setRightPanelTab] = useState<'output' | 'graph' | 'gas' | 'security'>('output');
   const [gasAnalysis, setGasAnalysis] = useState<GasAnalysis | null>(null);
+  const [auditReport, setAuditReport] = useState<AuditReport | null>(null);
 
   // Load deployed contracts from localStorage on mount
   useEffect(() => {
@@ -242,6 +245,14 @@ export function App() {
         }
       } catch (error) {
         console.error('Failed to analyze gas usage:', error);
+      }
+
+      // Perform security audit
+      try {
+        const audit = auditContract(sourceCode, contractName);
+        setAuditReport(audit);
+      } catch (error) {
+        console.error('Failed to perform security audit:', error);
       }
     } catch (error) {
       setCompilationStatus('failed');
@@ -469,8 +480,8 @@ export function App() {
                 <button
                   onClick={() => setRightPanelTab('output')}
                   className={`flex-1 py-2 px-2 text-xs font-medium transition-colors ${rightPanelTab === 'output'
-                      ? 'text-blue-400 border-b-2 border-blue-400 bg-gray-800'
-                      : 'text-gray-400 hover:text-white'
+                    ? 'text-blue-400 border-b-2 border-blue-400 bg-gray-800'
+                    : 'text-gray-400 hover:text-white'
                     }`}
                 >
                   Output
@@ -478,8 +489,8 @@ export function App() {
                 <button
                   onClick={() => setRightPanelTab('graph')}
                   className={`flex-1 py-2 px-2 text-xs font-medium transition-colors ${rightPanelTab === 'graph'
-                      ? 'text-blue-400 border-b-2 border-blue-400 bg-gray-800'
-                      : 'text-gray-400 hover:text-white'
+                    ? 'text-blue-400 border-b-2 border-blue-400 bg-gray-800'
+                    : 'text-gray-400 hover:text-white'
                     }`}
                 >
                   Graph
@@ -487,11 +498,20 @@ export function App() {
                 <button
                   onClick={() => setRightPanelTab('gas')}
                   className={`flex-1 py-2 px-2 text-xs font-medium transition-colors ${rightPanelTab === 'gas'
+                    ? 'text-blue-400 border-b-2 border-blue-400 bg-gray-800'
+                    : 'text-gray-400 hover:text-white'
+                    }`}
+                >
+                  Gas
+                </button>
+                <button
+                  onClick={() => setRightPanelTab('security')}
+                  className={`flex-1 py-2 px-2 text-xs font-medium transition-colors ${rightPanelTab === 'security'
                       ? 'text-blue-400 border-b-2 border-blue-400 bg-gray-800'
                       : 'text-gray-400 hover:text-white'
                     }`}
                 >
-                  Gas
+                  Security
                 </button>
               </div>
 
@@ -509,6 +529,9 @@ export function App() {
                 )}
                 {rightPanelTab === 'gas' && (
                   <GasOptimizerPanel analysis={gasAnalysis} />
+                )}
+                {rightPanelTab === 'security' && (
+                  <SecurityAuditPanel report={auditReport} />
                 )}
               </div>
               <div className="flex-1">
