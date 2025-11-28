@@ -26,7 +26,8 @@ export async function deployContract(
   bytecode: string,
   abi: any[],
   constructorArgs: any[],
-  signer: ethers.Signer
+  signer: ethers.Signer,
+  contractName: string = 'DeployedContract'
 ): Promise<DeploymentResult> {
   try {
     // Create contract factory
@@ -64,7 +65,7 @@ export async function deployContract(
     // Create deployed contract object
     const deployedContract: DeployedContract = {
       address: contractAddress,
-      contractName: 'DeployedContract', // This should be passed as parameter
+      contractName: contractName,
       network: networkConfig,
       transactionHash: deploymentTx.hash,
       deployedAt: new Date(),
