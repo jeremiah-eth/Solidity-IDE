@@ -192,3 +192,5 @@ export const TutorialPanel: React.FC<TutorialPanelProps> = ({ onLoadCode }) => {
         </GlassCard>
     );
 };
+
+export default TutorialPanel;
