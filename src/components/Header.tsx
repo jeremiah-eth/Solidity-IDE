@@ -226,6 +226,7 @@ export function Header({
           </div>
           <DarkModeToggle />
         </div>
+      </div>
     </GlassCard>
   );
 }
