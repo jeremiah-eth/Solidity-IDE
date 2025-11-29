@@ -29,19 +29,6 @@ export const TutorialPanel: React.FC<TutorialPanelProps> = ({ onLoadCode }) => {
     const handleNextLesson = () => {
         if (selectedTutorial && currentLessonIndex < selectedTutorial.lessons.length - 1) {
             const nextIndex = currentLessonIndex + 1;
-            setCurrentLessonIndex(nextIndex);
-            setShowHints(false);
-            setShowSolution(false);
-            onLoadCode(selectedTutorial.lessons[nextIndex].code);
-
-            // Mark current lesson as completed
-            markLessonCompleted(selectedTutorial.id, currentLesson!.id);
-        }
-    };
-
-    const handleLoadSolution = () => {
-        if (currentLesson?.solution) {
-            onLoadCode(currentLesson.solution);
             setShowSolution(true);
         }
     };
