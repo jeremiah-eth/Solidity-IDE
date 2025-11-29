@@ -27,6 +27,7 @@ import { GasOptimizerPanel } from './components/GasOptimizerPanel';
 import { analyzeGasUsage, type GasAnalysis } from './utils/gasProfiler';
 import { SecurityAuditPanel } from './components/SecurityAuditPanel';
 import { auditContract, type AuditReport } from './utils/securityAuditor';
+import { StatusBar } from './components/StatusBar';
 import './config/web3'; // Initialize AppKit
 
 // Toast interface
@@ -84,6 +85,7 @@ export function App() {
   const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isFaucetModalOpen, setIsFaucetModalOpen] = useState(false);
+  const [isConsoleOpen, setIsConsoleOpen] = useState(false);
   const { requestFunds } = useFaucet();
   const { events, clearEvents, isPaused, togglePause } = useContractEvents(
     signer?.provider || null,
@@ -507,8 +509,8 @@ export function App() {
                 <button
                   onClick={() => setRightPanelTab('security')}
                   className={`flex-1 py-2 px-2 text-xs font-medium transition-colors ${rightPanelTab === 'security'
-                      ? 'text-blue-400 border-b-2 border-blue-400 bg-gray-800'
-                      : 'text-gray-400 hover:text-white'
+                    ? 'text-blue-400 border-b-2 border-blue-400 bg-gray-800'
+                    : 'text-gray-400 hover:text-white'
                     }`}
                 >
                   Security
@@ -550,32 +552,44 @@ export function App() {
         )}
       </div>
 
-      {!isMobile && (
-        <div className="fixed bottom-0 left-0 right-0 h-1/3 border-t border-gray-700 bg-gray-800 flex">
-          {selectedContract && (
-            <div className="w-1/2 border-r border-gray-700 h-full overflow-auto">
-              <ContractInteraction
-                deployedContracts={getDeployedContracts()}
-                selectedContract={selectedContract}
-                chainId={selectedChainId}
-                signer={signer}
-                onSelectContract={handleSelectContract}
-              />
-            </div>
-          )}
-          <div className={`${selectedContract ? 'w-1/2' : 'w-full'} h-full`}>
-            <EventConsole
-              events={events}
-              onClear={clearEvents}
-              isPaused={isPaused}
-              onTogglePause={togglePause}
+      {!isMobile && selectedContract && (
+        <div className="fixed bottom-8 left-0 right-0 h-1/3 border-t border-gray-700 bg-gray-800 flex z-30">
+          <div className="w-full h-full overflow-auto">
+            <ContractInteraction
+              deployedContracts={getDeployedContracts()}
+              selectedContract={selectedContract}
+              chainId={selectedChainId}
+              signer={signer}
+              onSelectContract={handleSelectContract}
             />
           </div>
         </div>
       )}
 
+      {/* Terminal Console Overlay */}
+      <EventConsole
+        events={events}
+        onClear={clearEvents}
+        isPaused={isPaused}
+        onTogglePause={togglePause}
+        isOpen={isConsoleOpen}
+        onToggleOpen={() => setIsConsoleOpen(!isConsoleOpen)}
+      />
+
+      {/* Status Bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-50">
+        <StatusBar
+          isConsoleOpen={isConsoleOpen}
+          onToggleConsole={() => setIsConsoleOpen(!isConsoleOpen)}
+          onShowShortcuts={() => setShowKeyboardShortcuts(true)}
+          eventsCount={events.length}
+          networkName={currentNetwork?.name}
+          blockNumber={0} // We could get this from a hook later
+        />
+      </div>
+
       {/* Toasts */}
-      <div className="fixed top-20 right-4 z-50 space-y-2">
+      <div className="fixed top-20 right-4 z-[60] space-y-2">
         {toasts.map((toast) => (
           <div
             key={toast.id}
@@ -600,7 +614,7 @@ export function App() {
 
       {/* Keyboard Shortcuts Modal */}
       {showKeyboardShortcuts && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[70]">
           <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">Keyboard Shortcuts</h3>
@@ -632,15 +646,6 @@ export function App() {
           </div>
         </div>
       )}
-
-      {/* Help Button */}
-      <button
-        onClick={() => setShowKeyboardShortcuts(true)}
-        className="fixed bottom-4 right-4 bg-gray-700 hover:bg-gray-600 text-white p-3 rounded-full shadow-lg transition-colors"
-        title="Keyboard Shortcuts"
-      >
-        <HelpCircle className="h-5 w-5" />
-      </button>
 
       {/* Faucet Modal */}
       <FaucetModal
