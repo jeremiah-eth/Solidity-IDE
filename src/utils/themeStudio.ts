@@ -250,7 +250,7 @@ export function getCurrentThemeId(): string {
  * Create custom theme from base
  */
 export function createCustomTheme(name: string, baseThemeId: string): Theme {
-    const baseTheme = getTheme(baseThemeId) ?? builtInThemes[0];
+    const baseTheme = getTheme(baseThemeId) ?? builtInThemes[0]!;
 
     return {
         id: `custom-${Date.now()}`,
